@@ -47,7 +47,7 @@ public class TowerTest {
         assertEquals(TowerBuilder.getScore(testTowerShort), 8);
 
 
-        ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(pieces, 200, 5);
+        ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(pieces, 10, 5);
         int nonZeroTowers = 0;
         for (List<TowerPiece> t : pop) {
             for (TowerPiece p : t) {
@@ -58,6 +58,8 @@ public class TowerTest {
             if (score > 0) nonZeroTowers++;
             System.out.println();
         }
+
+        System.out.println(pop.size() + " total towers");
 
         System.out.println(nonZeroTowers + " valid towers");
 
