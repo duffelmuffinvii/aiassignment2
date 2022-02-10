@@ -9,7 +9,7 @@ public class TowerBuilder {
     public static ArrayList<List<TowerPiece>> generatePop(ArrayList<TowerPiece> pieces, int size, int maxTowerSize) {
         ArrayList<List<TowerPiece>> population = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            population.add(randomTower(pieces, randInt(2, 5)));
+            population.add(randomTower(pieces, randInt(2, maxTowerSize)));
         }
 
         return population;
@@ -48,6 +48,36 @@ public class TowerBuilder {
         bestTowers.add(towers.get(secondBestIndex));
 
         return bestTowers;
+    }
+
+    // removes the lowest 30% of towers (theoretically, havent tested)
+    public static ArrayList<List<TowerPiece>> cull(ArrayList<List<TowerPiece>> towers) {
+        int towersToCull = (int)Math.floor(towers.size() * 0.3);
+        ArrayList<Integer> scores = new ArrayList<>();
+
+        for (List<TowerPiece> tower : towers) {
+            scores.add(getScore(tower));
+        }
+
+        int removed = 0;
+
+        while (removed < towersToCull) {
+            int min = scores.get(0);
+            int minIndex = 0;
+
+            for (int i = 0; i < towers.size(); i++) {
+                if (scores.get(i) < min) {
+                    min = scores.get(i);
+                    minIndex = i;
+                }
+            }
+
+            towers.remove(minIndex);
+            removed++;
+        }
+
+        return towers;
+
     }
 
     public static List<TowerPiece> randomTower(ArrayList<TowerPiece> availablePieces, int towerSize) {

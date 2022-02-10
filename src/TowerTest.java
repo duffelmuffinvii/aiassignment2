@@ -1,7 +1,6 @@
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,44 +11,21 @@ public class TowerTest {
     TowerPiece wall312 = new TowerPiece("Wall", 3, 1, 2);
     TowerPiece lookout224 = new TowerPiece("Lookout", 2, 2, 4);
 
-//    TowerPiece door537 = new TowerPiece("Door", 5, 3, 7);
-//    TowerPiece door981 = new TowerPiece("Door", 9, 8, 1);
-//    TowerPiece door288 = new TowerPiece("Door", 2, 8, 8);
-//    TowerPiece door436 = new TowerPiece("Door", 4, 3, 6);
-//
-//    TowerPiece wall836 = new TowerPiece("Wall", 8, 3, 6);
-//    TowerPiece wall197 = new TowerPiece("Wall", 1, 9, 7);
-//    TowerPiece wall573 = new TowerPiece("Wall", 5, 7, 3);
-//    TowerPiece wall982 = new TowerPiece("Wall", 9, 8, 2);
-//
-//    TowerPiece lookout624 = new TowerPiece("Lookout", 6, 2, 4);
-//    TowerPiece lookout167 = new TowerPiece("Lookout", 1, 6, 7);
-//    TowerPiece lookout248 = new TowerPiece("Lookout", 2, 4, 8);
-//    TowerPiece lookout234 = new TowerPiece("Lookout", 2, 3, 4);
-
-    ArrayList<TowerPiece> allpieces = new ArrayList<>();
+    ArrayList<TowerPiece> pieces = new ArrayList<>();
 
 
     @Test
     public void testEvalTower() {
 
-//        allpieces.add(door537);
-//        allpieces.add(door981);
-//        allpieces.add(door288);
-//        allpieces.add(door436);
-//        allpieces.add(wall836);
-//        allpieces.add(wall197);
-//        allpieces.add(wall573);
-//        allpieces.add(wall982);
-//        allpieces.add(lookout624);
-//        allpieces.add(lookout167);
-//        allpieces.add(lookout248);
-//        allpieces.add(lookout234);
-
-        for (int i = 0; i < 100; i++) {
-            TowerPiece piece = TowerBuilder.generateTowerPiece();
-            allpieces.add(piece);
-            System.out.println(piece.toString());
+        for (int i = 1; i < 6; i ++) {
+            for (int j = 1; j < 6; j++) {
+                for (int k = 1; k < 6; k++) {
+                    pieces.add(new TowerPiece("Door", i, j, k));
+                    pieces.add(new TowerPiece("Wall", i, j, k));
+                    pieces.add(new TowerPiece("Lookout", i, j, k));
+                    System.out.println("DWL for " + i + ", " + j + ", " + k);
+                }
+            }
         }
 
         ArrayList<TowerPiece> testTower1 = new ArrayList<>();
@@ -70,9 +46,8 @@ public class TowerTest {
         assertEquals(TowerBuilder.getScore(testTowerInvalid1), 0);
         assertEquals(TowerBuilder.getScore(testTowerShort), 8);
 
-        System.out.println(allpieces.size());
 
-        ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(allpieces, 30, 2);
+        ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(pieces, 200, 5);
         int nonZeroTowers = 0;
         for (List<TowerPiece> t : pop) {
             for (TowerPiece p : t) {
