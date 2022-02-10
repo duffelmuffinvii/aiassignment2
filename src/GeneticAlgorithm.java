@@ -1,20 +1,28 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class GeneticAlgorithm {
 
-    //TODO: is this array list of gen0 an array of all the scores?
-    //TODO: I treated it as so but I think it would have to be which bin each number is in? Not sure
-    ArrayList<Float> gen0;
+    //list of scores for gen0
+    ArrayList<Float> gen0Scores;
+
+    //for puzzle 1: hash map with key=bin# and value=value assigned to bin
+    //for puzzle 2: hash map with key=place on tower and value=piece
+    HashMap<Integer,Float> gen0;
+
+    //gen1
+    HashMap<Integer, Float> gen1H = new HashMap<>();
     ArrayList<Float> gen1 = new ArrayList<>();
 
-    public GeneticAlgorithm(ArrayList<Float> gen0) {
+    public GeneticAlgorithm(ArrayList<Float> gen0Scores, HashMap<Integer,Float> gen0) {
+        this.gen0Scores = gen0Scores;
         this.gen0 = gen0;
     }
 
     //updates gen1 with top scoring organisms from gen0
     public void elitism() {
-        ArrayList<Float> temp = this.gen0;
+        ArrayList<Float> temp = this.gen0Scores;
         float max = 0;
         int maxIndex = -1;
         int count = 0;
@@ -65,12 +73,12 @@ public class GeneticAlgorithm {
         Random r = new Random();
 
         //calculate the sum
-        for(Float score: this.gen0) {
+        for(Float score: this.gen0Scores) {
             sum = sum+score;
         }
 
         //divide each score by the calculated sum
-        for(Float score: this.gen0) {
+        for(Float score: this.gen0Scores) {
             chance = score/sum;
             chancesOfSelection.add(chance);
             cumulativeChance = cumulativeChance + chance;
@@ -88,8 +96,8 @@ public class GeneticAlgorithm {
                 //TODO not entirely sure how to proceed
 
             }
-        }
 
+        }
 
     }
 
