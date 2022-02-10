@@ -15,10 +15,45 @@ public class TowerBuilder {
         return population;
     }
 
-    public static List<TowerPiece> randomTower(ArrayList<TowerPiece> list, int towerSize) {
-        list = new ArrayList<>(list);
-        Collections.shuffle(list);
-        return list.subList(0, towerSize);
+    // disgusting but its probably fine
+    public static ArrayList<List<TowerPiece>> getBestTwo(ArrayList<List<TowerPiece>> towers) {
+
+        ArrayList<Integer> scores = new ArrayList<>();
+        ArrayList<List<TowerPiece>> bestTowers = new ArrayList<>();
+
+        int best = 0;
+        int bestIndex = 0;
+        int secondBest = 0;
+        int secondBestIndex = 0;
+
+        for (int i = 0; i < towers.size(); i++) {
+            scores.add(TowerBuilder.getScore(towers.get(i)));
+        }
+
+        for (int i = 0; i < scores.size(); i++) {
+            if (scores.get(i) > best) {
+                best = scores.get(i);
+                bestIndex = i;
+            }
+        }
+
+        for (int i = 0; i < scores.size(); i++) {
+            if (scores.get(i) > secondBest && scores.get(i) != best) {
+                secondBest = scores.get(i);
+                secondBestIndex = i;
+            }
+        }
+
+        bestTowers.add(towers.get(bestIndex));
+        bestTowers.add(towers.get(secondBestIndex));
+
+        return bestTowers;
+    }
+
+    public static List<TowerPiece> randomTower(ArrayList<TowerPiece> availablePieces, int towerSize) {
+        availablePieces = new ArrayList<>(availablePieces);
+        Collections.shuffle(availablePieces);
+        return availablePieces.subList(0, towerSize);
     }
 
     public static TowerPiece generateTowerPiece() {
@@ -51,26 +86,26 @@ public class TowerBuilder {
         int cost = tower.get(0).cost;
 
         if (!tower.get(0).type.equals("Door")) {
-            System.out.println("Bottom piece not door");
+            //System.out.println("Bottom piece not door");
             return 0; // Bottom must be a door
         }
         if (tower.get(0).strength < height - 1) {
-            System.out.println("insufficient strength");
+            //System.out.println("insufficient strength");
             return 0; // Bottom must have strength to support rest of pieces
         }
 
         if (tower.size() > 2) {
             for (int i = 1; i < height - 1; i++) {
                 if (!tower.get(i).type.equals("Wall")) {
-                    System.out.println("non wall piece in between top and bottom") ;
+                    //System.out.println("non wall piece in between top and bottom") ;
                     return 0; // Every piece between top and bottom must be wall
                 }
                 if (((height - 1) - i) > tower.get(i).strength) {
-                    System.out.println("insufficient strength");
+                    //System.out.println("insufficient strength");
                     return 0; // Piece must be strong enough to support all pieces above it
                 }
                 if (tower.get(i).width > tower.get(i-1).width) {
-                    System.out.println("width conflict");
+                    //System.out.println("width conflict");
                     return 0; // Piece cannot be wider than the one beneath it
                 }
                 else cost += tower.get(i).cost;
@@ -88,21 +123,12 @@ public class TowerBuilder {
         return 10 + (height * height) - cost;
     }
 
+
+
     public static int randInt(int min, int max) {
 
-        // NOTE: This will (intentionally) not run as written so that folks
-        // copy-pasting have to think about how to initialize their
-        // Random instance.  Initialization of the Random instance is outside
-        // the main scope of the question, but some decent options are to have
-        // a field that is initialized once and then re-used as needed or to
-        // use ThreadLocalRandom (if using at least Java 1.7).
-        //
-        // In particular, do NOT do 'Random rand = new Random()' here or you
-        // will get not very good / not very random results.
         Random rand =  new Random();
 
-        // nextInt is normally exclusive of the top value,
-        // so add 1 to make it inclusive
         int randomNum = rand.nextInt((max - min) + 1) + min;
 
         return randomNum;

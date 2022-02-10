@@ -12,20 +12,20 @@ public class TowerTest {
     TowerPiece wall312 = new TowerPiece("Wall", 3, 1, 2);
     TowerPiece lookout224 = new TowerPiece("Lookout", 2, 2, 4);
 
-    TowerPiece door537 = new TowerPiece("Door", 5, 3, 7);
-    TowerPiece door981 = new TowerPiece("Door", 9, 8, 1);
-    TowerPiece door288 = new TowerPiece("Door", 2, 8, 8);
-    TowerPiece door436 = new TowerPiece("Door", 4, 3, 6);
-
-    TowerPiece wall836 = new TowerPiece("Wall", 8, 3, 6);
-    TowerPiece wall197 = new TowerPiece("Wall", 1, 9, 7);
-    TowerPiece wall573 = new TowerPiece("Wall", 5, 7, 3);
-    TowerPiece wall982 = new TowerPiece("Wall", 9, 8, 2);
-
-    TowerPiece lookout624 = new TowerPiece("Lookout", 6, 2, 4);
-    TowerPiece lookout167 = new TowerPiece("Lookout", 1, 6, 7);
-    TowerPiece lookout248 = new TowerPiece("Lookout", 2, 4, 8);
-    TowerPiece lookout234 = new TowerPiece("Lookout", 2, 3, 4);
+//    TowerPiece door537 = new TowerPiece("Door", 5, 3, 7);
+//    TowerPiece door981 = new TowerPiece("Door", 9, 8, 1);
+//    TowerPiece door288 = new TowerPiece("Door", 2, 8, 8);
+//    TowerPiece door436 = new TowerPiece("Door", 4, 3, 6);
+//
+//    TowerPiece wall836 = new TowerPiece("Wall", 8, 3, 6);
+//    TowerPiece wall197 = new TowerPiece("Wall", 1, 9, 7);
+//    TowerPiece wall573 = new TowerPiece("Wall", 5, 7, 3);
+//    TowerPiece wall982 = new TowerPiece("Wall", 9, 8, 2);
+//
+//    TowerPiece lookout624 = new TowerPiece("Lookout", 6, 2, 4);
+//    TowerPiece lookout167 = new TowerPiece("Lookout", 1, 6, 7);
+//    TowerPiece lookout248 = new TowerPiece("Lookout", 2, 4, 8);
+//    TowerPiece lookout234 = new TowerPiece("Lookout", 2, 3, 4);
 
     ArrayList<TowerPiece> allpieces = new ArrayList<>();
 
@@ -46,7 +46,7 @@ public class TowerTest {
 //        allpieces.add(lookout248);
 //        allpieces.add(lookout234);
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 100; i++) {
             TowerPiece piece = TowerBuilder.generateTowerPiece();
             allpieces.add(piece);
             System.out.println(piece.toString());
@@ -72,7 +72,7 @@ public class TowerTest {
 
         System.out.println(allpieces.size());
 
-        ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(allpieces, 20, 4);
+        ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(allpieces, 30, 2);
         int nonZeroTowers = 0;
         for (List<TowerPiece> t : pop) {
             for (TowerPiece p : t) {
@@ -85,5 +85,19 @@ public class TowerTest {
         }
 
         System.out.println(nonZeroTowers + " valid towers");
+
+        ArrayList<List<TowerPiece>> best2 = TowerBuilder.getBestTwo(pop);
+
+        System.out.println("BEST TWO");
+
+        for (List<TowerPiece> t : best2) {
+            for (TowerPiece p : t) {
+                System.out.println(p.toString());
+            }
+            int score = TowerBuilder.getScore(t);
+            System.out.println("Score: " + score);
+            if (score > 0) nonZeroTowers++;
+            System.out.println();
+        }
     }
 }
