@@ -50,6 +50,36 @@ public class TowerBuilder {
         return bestTowers;
     }
 
+    // removes the lowest 30% of towers (theoretically, havent tested)
+    public static ArrayList<List<TowerPiece>> cull(ArrayList<List<TowerPiece>> towers) {
+        int towersToCull = (int)Math.floor(towers.size() * 0.3);
+        ArrayList<Integer> scores = new ArrayList<>();
+
+        for (List<TowerPiece> tower : towers) {
+            scores.add(getScore(tower));
+        }
+
+        int removed = 0;
+
+        while (removed < towersToCull) {
+            int min = scores.get(0);
+            int minIndex = 0;
+
+            for (int i = 0; i < towers.size(); i++) {
+                if (scores.get(i) < min) {
+                    min = scores.get(i);
+                    minIndex = i;
+                }
+            }
+
+            towers.remove(minIndex);
+            removed++;
+        }
+
+        return towers;
+
+    }
+
     public static List<TowerPiece> randomTower(ArrayList<TowerPiece> availablePieces, int towerSize) {
         availablePieces = new ArrayList<>(availablePieces);
         Collections.shuffle(availablePieces);
