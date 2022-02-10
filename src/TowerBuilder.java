@@ -9,7 +9,7 @@ public class TowerBuilder {
     public static ArrayList<List<TowerPiece>> generatePop(ArrayList<TowerPiece> pieces, int size, int maxTowerSize) {
         ArrayList<List<TowerPiece>> population = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            population.add(randomTower(pieces, randInt(2, 5)));
+            population.add(randomTower(pieces, randInt(2, maxTowerSize)));
         }
 
         return population;
