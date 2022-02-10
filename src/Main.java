@@ -38,7 +38,7 @@ public class Main {
         for (int i = 0; i < 40; i++) {
             input.add((20 * r.nextFloat())-10);
         }
-
+assignRandomly(input);
         try {
             File myObj = new File(args[1]);
             if (myObj.createNewFile()) {
@@ -63,4 +63,57 @@ public class Main {
         }
     }
 
+    public static void assignRandomly(ArrayList<Float> numbers) {
+        ArrayList<Float> numbersinBin1 = new ArrayList<>();
+        ArrayList<Float> numbersinBin2 = new ArrayList<>();
+        ArrayList<Float> numbersinBin3 = new ArrayList<>();
+        ArrayList<Float> numbersinBin4 = new ArrayList<>();
+        Bin bin1 = new Bin(1, numbersinBin1);
+        Bin bin2 =new Bin(2,numbersinBin2);
+        Bin bin3 =new Bin(3,numbersinBin3);
+        Bin bin4 =new Bin(4,numbersinBin4);
+        int bound=40;
+        int i = 0;
+        while (i < 10)
+        {
+        int randomNumber = new Random().nextInt(bound--);
+        float choice = numbers.get(randomNumber);
+            numbersinBin1.add(numbers.get(randomNumber));
+            numbers.remove(choice);
+            randomNumber= new Random().nextInt(bound--);
+            choice = numbers.get(randomNumber);
+            numbersinBin2.add(numbers.get(randomNumber));
+            numbers.remove(choice);
+            numbersinBin3.add(numbers.get(randomNumber));
+            numbers.remove(choice);
+            randomNumber= new Random().nextInt(bound--);
+            choice = numbers.get(randomNumber);
+            numbersinBin4.add(numbers.get(randomNumber));
+            numbers.remove(choice);
+            randomNumber= new Random().nextInt(bound--);
+            choice = numbers.get(randomNumber);
+
+        i++;
+      }
+        System.out.println("Numbers in bin1");
+        for(int j=0;j<10;j++)
+        {
+            System.out.println(numbersinBin1.get(j));
+        }
+        System.out.println("Numbers in bin2");
+        for(int j=0;j<10;j++)
+        {
+            System.out.println(numbersinBin2.get(j));
+        }
+        System.out.println("Numbers in bin3");
+        for(int j=0;j<10;j++)
+        {
+            System.out.println(numbersinBin3.get(j));
+        }
+        System.out.println("Numbers in bin4");
+        for(int j=0;j<10;j++)
+        {
+            System.out.println(numbersinBin4.get(j));
+        }
+    }
 }
