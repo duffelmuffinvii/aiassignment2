@@ -10,4 +10,8 @@ public class TowerPiece {
         this.strength = strength;
         this.cost = cost;
     }
+
+    public String toString() {
+        return this.type + ", " + this.width + ", " + this.strength + ", " + this.cost;
+    }
 }
