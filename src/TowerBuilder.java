@@ -1,38 +1,30 @@
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public class TowerBuilder {
 
     public TowerBuilder() {
     }
 
-    public ArrayList<TowerPiece> buildRandomTower(ArrayList<TowerPiece> allPieces) {
-
-        int min = 2;
-        int max = 10;
-
-        Random r = new Random();
-        r.setSeed(5);
-        int length = r.nextInt((max - min) + 1) + min;
-
-        ArrayList<TowerPiece> tower = new ArrayList<>();
-
-        for (int i = 0; i < length; i++) {
-            int pieceToUse = r.nextInt((length - min) + 1) + min;
-            tower.add(allPieces.get(pieceToUse));
-            allPieces.remove(pieceToUse);
+    public static ArrayList<List<TowerPiece>> generatePop(ArrayList<TowerPiece> pieces, int size, int maxTowerSize) {
+        ArrayList<List<TowerPiece>> population = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            population.add(randomTower(pieces, randInt(2, 5)));
         }
 
-        return tower;
+        return population;
+    }
 
+    public static List<TowerPiece> randomTower(ArrayList<TowerPiece> list, int towerSize) {
+        list = new ArrayList<>(list);
+        Collections.shuffle(list);
+        return list.subList(0, towerSize);
     }
 
     public static TowerPiece generateTowerPiece() {
         Random r = new Random();
 
-        int typeInt = r.nextInt(4) + 1;
+        int typeInt = randInt(1, 3);
         String type;
 
         switch (typeInt) {
@@ -50,10 +42,10 @@ public class TowerBuilder {
                 return null;
         }
 
-        return new TowerPiece(type, r.nextInt(10)+1, r.nextInt(10)+1, r.nextInt(10)+1);
+        return new TowerPiece(type, randInt(1, 10), randInt(1, 10), randInt(1, 10));
     }
 
-    public static int getScore (ArrayList<TowerPiece> tower) {
+    public static int getScore (List<TowerPiece> tower) {
 
         int height = tower.size();
         int cost = tower.get(0).cost;
@@ -94,5 +86,25 @@ public class TowerBuilder {
             cost += top.cost;
         }
         return 10 + (height * height) - cost;
+    }
+
+    public static int randInt(int min, int max) {
+
+        // NOTE: This will (intentionally) not run as written so that folks
+        // copy-pasting have to think about how to initialize their
+        // Random instance.  Initialization of the Random instance is outside
+        // the main scope of the question, but some decent options are to have
+        // a field that is initialized once and then re-used as needed or to
+        // use ThreadLocalRandom (if using at least Java 1.7).
+        //
+        // In particular, do NOT do 'Random rand = new Random()' here or you
+        // will get not very good / not very random results.
+        Random rand =  new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
     }
 }
