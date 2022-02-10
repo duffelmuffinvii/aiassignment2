@@ -6,10 +6,18 @@ public class TowerBuilder {
     public TowerBuilder() {
     }
 
-    public static ArrayList<List<TowerPiece>> generatePop(ArrayList<TowerPiece> pieces, int size, int maxTowerSize) {
+    // generates initial population of towers given list of pieces
+    public static ArrayList<List<TowerPiece>> generatePop(ArrayList<TowerPiece> pieces, int minValidTowers, int maxTowerSize) {
         ArrayList<List<TowerPiece>> population = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            population.add(randomTower(pieces, randInt(2, maxTowerSize)));
+        int validTowers = 0;
+        while (validTowers < minValidTowers) {
+            List<TowerPiece> t = randomTower(pieces, randInt(2, maxTowerSize));
+            if (getScore(t) > 0) {
+                System.out.println("scored " + getScore(t));
+                System.out.println(t.toString());
+                validTowers++;
+            }
+            population.add(t);
         }
 
         return population;
