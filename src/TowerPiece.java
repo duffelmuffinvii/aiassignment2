@@ -14,4 +14,8 @@ public class TowerPiece {
     public String toString() {
         return this.type + ", " + this.width + ", " + this.strength + ", " + this.cost;
     }
+
+    public boolean equals(TowerPiece p) {
+        return type.equals(p.type) && width == p.width && strength == p.strength && cost == p.cost;
+    }
 }
