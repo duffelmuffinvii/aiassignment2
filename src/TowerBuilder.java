@@ -1,5 +1,10 @@
-import java.lang.reflect.Array;
 import java.util.*;
+
+class compare implements Comparator<List<TowerPiece>> {
+    public int compare(List<TowerPiece> a, List<TowerPiece> b) {
+        return TowerBuilder.getScore(a) - TowerBuilder.getScore(b);
+    }
+}
 
 public class TowerBuilder {
 
@@ -23,6 +28,7 @@ public class TowerBuilder {
         return population;
     }
 
+    // currently just takes alternating pieces from each parent, likely will be changed
     public static List<TowerPiece> produceChild(List<TowerPiece> parentA, List<TowerPiece> parentB) {
         List<TowerPiece> child = new ArrayList<>();
         int childHeight = parentB.size();
@@ -48,7 +54,7 @@ public class TowerBuilder {
     }
 
     public static ArrayList<List<TowerPiece>> nextGen(ArrayList<List<TowerPiece>> prevGen) {
-        ArrayList<List<TowerPiece>> next = getBestTwo(prevGen);
+        ArrayList<List<TowerPiece>> next = getBestX(prevGen, 2);
         int genSize = prevGen.size();
         ArrayList<List<TowerPiece>> culledPrev = cull(prevGen);
 
@@ -64,7 +70,7 @@ public class TowerBuilder {
 
         float cumProb = 0;
 
-        //reiterates through list to scale scores and then convert it to cumulative probabilities, still corresponding to indices of towers
+        //reiterates through list to scale scores and then convert it to cumulative probabilities, still corresponding to indices in list of towers
         for (int i = 0; i < probabilities.size(); i++) {
             float thisProb = probabilities.get(i)/sumScore;
             cumProb += thisProb;
@@ -105,40 +111,23 @@ public class TowerBuilder {
         System.out.println();
     }
 
-    // disgusting but its probably fine
-    public static ArrayList<List<TowerPiece>> getBestTwo(ArrayList<List<TowerPiece>> towers) {
+    public static ArrayList<List<TowerPiece>> getBestX(ArrayList<List<TowerPiece>> towers, int amount) {
 
-        ArrayList<Integer> scores = new ArrayList<>();
-        ArrayList<List<TowerPiece>> bestTowers = new ArrayList<>();
+        ArrayList<List<TowerPiece>> towersClone = new ArrayList<>();
 
-        int best = 0;
-        int bestIndex = 0;
-        int secondBest = 0;
-        int secondBestIndex = 0;
-
-        for (List<TowerPiece> tower : towers) {
-            scores.add(TowerBuilder.getScore(tower));
+        for (List<TowerPiece> t : towers) {
+            towersClone.add(t);
         }
 
-        for (int i = 0; i < scores.size(); i++) {
-            if (scores.get(i) > best) {
-                best = scores.get(i);
-                bestIndex = i;
-            }
-        }
+        Collections.sort(towersClone, new compare());
+        ArrayList<List<TowerPiece>> bestx = new ArrayList<>();
+        bestx.addAll(towersClone.subList(0, amount));
 
-        for (int i = 0; i < scores.size(); i++) {
-            if (scores.get(i) > secondBest && scores.get(i) != best) {
-                secondBest = scores.get(i);
-                secondBestIndex = i;
-            }
-        }
+        return bestx;
 
-        bestTowers.add(towers.get(bestIndex));
-        bestTowers.add(towers.get(secondBestIndex));
-
-        return bestTowers;
     }
+
+
 
     // removes the lowest 30% of towers (theoretically, havent tested)
     public static ArrayList<List<TowerPiece>> cull(ArrayList<List<TowerPiece>> towers) {
