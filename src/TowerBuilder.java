@@ -13,14 +13,83 @@ public class TowerBuilder {
         while (validTowers < minValidTowers) {
             List<TowerPiece> t = randomTower(pieces, randInt(2, maxTowerSize));
             if (getScore(t) > 0) {
-                System.out.println("scored " + getScore(t));
-                System.out.println(t.toString());
+//                System.out.println("scored " + getScore(t));
+//                System.out.println(t.toString());
                 validTowers++;
             }
             population.add(t);
         }
 
         return population;
+    }
+
+    public static List<TowerPiece> produceChild(List<TowerPiece> parentA, List<TowerPiece> parentB) {
+        List<TowerPiece> child = new ArrayList<>();
+        int childHeight = parentB.size();
+
+        for (int i = 0; i < childHeight; i++) {
+            if (i % 2 == 0 && i < parentA.size()) child.add(parentA.get(i));
+            else child.add(parentB.get(i));
+        }
+
+        return child;
+    }
+
+    public static ArrayList<List<TowerPiece>> nextGen(ArrayList<List<TowerPiece>> prevGen) {
+        ArrayList<List<TowerPiece>> next = getBestTwo(prevGen);
+        int genSize = prevGen.size();
+        ArrayList<List<TowerPiece>> culledPrev = cull(prevGen);
+
+        ArrayList<Float> probabilities = new ArrayList<>();
+        int sumScore = 0;
+
+        for (List<TowerPiece> t : culledPrev) {
+            float thisScore = getScore(t);
+            probabilities.add(thisScore);
+            sumScore += thisScore;
+        }
+
+        float cumProb = 0;
+
+        for (int i = 0; i < probabilities.size(); i++) {
+            float thisProb = probabilities.get(i)/sumScore;
+            cumProb += thisProb;
+            probabilities.set(i, cumProb);
+            //System.out.println(cumProb);
+        }
+
+        Random r = new Random();
+
+        System.out.println(probabilities.get(probabilities.size()-1));
+
+        while (next.size() < genSize) {
+            float parentASelector = r.nextFloat();
+            float parentBSelector = r.nextFloat();
+            List<TowerPiece> parentA = new ArrayList<>();
+            List<TowerPiece> parentB = new ArrayList<>();
+
+            for (int i = 0; i < probabilities.size(); i++) {
+                //System.out.println("Comparing " + parentASelector + " and " + parentBSelector + " with " + probabilities.get(i));
+                if (parentASelector < probabilities.get(i) && parentA.isEmpty()) {
+                    parentA = culledPrev.get(i);
+                }
+
+                if (parentBSelector < probabilities.get(i) && parentB.isEmpty()) {
+                    parentB = culledPrev.get(i);
+                }
+            }
+
+            next.add(produceChild(parentA, parentB));
+        }
+
+        return next;
+    }
+
+    public static void towerInfo(List<TowerPiece> tower) {
+        for (TowerPiece p : tower) {
+            System.out.println(p.toString());
+        }
+        System.out.println();
     }
 
     // disgusting but its probably fine
@@ -34,8 +103,8 @@ public class TowerBuilder {
         int secondBest = 0;
         int secondBestIndex = 0;
 
-        for (int i = 0; i < towers.size(); i++) {
-            scores.add(TowerBuilder.getScore(towers.get(i)));
+        for (List<TowerPiece> tower : towers) {
+            scores.add(TowerBuilder.getScore(tower));
         }
 
         for (int i = 0; i < scores.size(); i++) {
@@ -167,8 +236,6 @@ public class TowerBuilder {
 
         Random rand =  new Random();
 
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-
-        return randomNum;
+        return rand.nextInt((max - min) + 1) + min;
     }
 }
