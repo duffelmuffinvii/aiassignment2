@@ -35,6 +35,18 @@ public class TowerBuilder {
         return child;
     }
 
+    public static void mutate(List<TowerPiece> a, List<TowerPiece> b) {
+        Random r = new Random();
+        int size;
+        if (a.size() < b.size()) size = a.size();
+        else size = b.size();
+        int index = r.nextInt(size);
+        TowerPiece pieceA = a.get(index);
+        TowerPiece pieceB = b.get(index);
+        b.set(index, pieceA);
+        a.set(index, pieceB);
+    }
+
     public static ArrayList<List<TowerPiece>> nextGen(ArrayList<List<TowerPiece>> prevGen) {
         ArrayList<List<TowerPiece>> next = getBestTwo(prevGen);
         int genSize = prevGen.size();
@@ -43,6 +55,7 @@ public class TowerBuilder {
         ArrayList<Float> probabilities = new ArrayList<>();
         int sumScore = 0;
 
+        //creates list of scores corresponding to list of towers
         for (List<TowerPiece> t : culledPrev) {
             float thisScore = getScore(t);
             probabilities.add(thisScore);
@@ -51,25 +64,24 @@ public class TowerBuilder {
 
         float cumProb = 0;
 
+        //reiterates through list to scale scores and then convert it to cumulative probabilities, still corresponding to indices of towers
         for (int i = 0; i < probabilities.size(); i++) {
             float thisProb = probabilities.get(i)/sumScore;
             cumProb += thisProb;
             probabilities.set(i, cumProb);
-            //System.out.println(cumProb);
         }
 
         Random r = new Random();
 
-        System.out.println(probabilities.get(probabilities.size()-1));
-
         while (next.size() < genSize) {
+            // random floats for selecting parents
             float parentASelector = r.nextFloat();
             float parentBSelector = r.nextFloat();
             List<TowerPiece> parentA = new ArrayList<>();
             List<TowerPiece> parentB = new ArrayList<>();
 
             for (int i = 0; i < probabilities.size(); i++) {
-                //System.out.println("Comparing " + parentASelector + " and " + parentBSelector + " with " + probabilities.get(i));
+                //checking selectors against probability distributiono list
                 if (parentASelector < probabilities.get(i) && parentA.isEmpty()) {
                     parentA = culledPrev.get(i);
                 }
@@ -79,6 +91,7 @@ public class TowerBuilder {
                 }
             }
 
+            // add child to list
             next.add(produceChild(parentA, parentB));
         }
 
