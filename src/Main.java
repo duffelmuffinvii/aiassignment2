@@ -32,7 +32,7 @@ public class Main {
     public static void puzzle1Setup(String[] args) {
         Random r = new Random();
         //random seed will have to be deleted before submission
-        r.setSeed(10);
+        //r.setSeed(10);
         ArrayList<Float> input = new ArrayList<>();
 
         for (int i = 0; i < 40; i++) {
