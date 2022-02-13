@@ -1,6 +1,7 @@
 import org.junit.Test;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,66 +55,27 @@ public class TowerTest {
         for (List<TowerPiece> t : pop) {
             int score = TowerBuilder.getScore(t);
             totalScore += score;
-//            System.out.println("Score: " + score);
             if (score > 0) nonZeroTowers++;
-//            System.out.println();
         }
 
-        System.out.println(pop.size() + " total towers");
+        System.out.println("Initial population average score: " + totalScore/pop.size());
+        ArrayList<List<TowerPiece>> initialBest = TowerBuilder.getBestTwo(pop);
 
-        System.out.println(nonZeroTowers + " valid towers");
-
-        System.out.println("Average score: " + totalScore/pop.size());
-
-        ArrayList<List<TowerPiece>> best2 = TowerBuilder.getBestTwo(pop);
-
-        System.out.println("Best score: " + TowerBuilder.getScore(best2.get(0)));
-
-        System.out.println("BEST TWO");
-
-        for (List<TowerPiece> t : best2) {
-            for (TowerPiece p : t) {
-                System.out.println(p.toString());
-            }
-            int score = TowerBuilder.getScore(t);
-            System.out.println("Score: " + score);
-            if (score > 0) nonZeroTowers++;
-            System.out.println();
+        System.out.println("Initial best:");
+        for (TowerPiece p : initialBest.get(0)) {
+            System.out.println(p.toString());
         }
 
         ArrayList<List<TowerPiece>> gen1 = TowerBuilder.nextGen(pop);
+
         ArrayList<List<TowerPiece>> gen2 = TowerBuilder.nextGen(gen1);
-//
-        int sumScore2 = 0;
-        int nonZero2 = 0;
-//
-        System.out.println("GEN 2");
 
-        for (List<TowerPiece> t : gen2) {
-            for (TowerPiece p : t) {
-                System.out.println(p.toString());
-            }
-            int score = TowerBuilder.getScore(t);
-            sumScore2 += score;
-            System.out.println("Score: " + score);
-            if (score > 0) nonZero2++;
-            System.out.println();
-        }
-//
-        System.out.println(gen2.size() + " towers");
-        System.out.println(nonZero2 + " valid towers");
-//
-        System.out.println("Avg score: " + sumScore2/gen2.size());
-        ArrayList<List<TowerPiece>> best2a = TowerBuilder.getBestTwo(gen2);
-        for (List<TowerPiece> t : best2a) {
-            for (TowerPiece p : t) {
-                System.out.println(p.toString());
-            }
-            int score = TowerBuilder.getScore(t);
-            System.out.println("Score: " + score);
-            if (score > 0) nonZeroTowers++;
-            System.out.println();
-        }
+        ArrayList<List<TowerPiece>> gen3 = TowerBuilder.nextGen(gen2);
 
+        ArrayList<List<TowerPiece>> bestSolutions = TowerBuilder.getBestTwo(gen3);
+
+        System.out.println("Best after 3 generations:");
+
+        TowerBuilder.towerInfo(bestSolutions.get(0));
     }
 }
