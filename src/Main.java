@@ -8,6 +8,28 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        ArrayList<Puzzle1> population = new ArrayList<>();
+        ArrayList<Double> scores = new ArrayList<>();
+
+        if(Integer.parseInt(args[0]) == 1) {
+            population = puzzle1Setup(args);
+            fileRead(args);
+        }
+
+        for(Puzzle1 p : population) {
+            scores.add(p.binFinalScore());
+        }
+
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(population,scores);
+
+        //puzzle1 genetic algorithm with elitism keeping 3, 30% being culled, and pop size of 10
+        ga.puzzle1GA(3,.30,10);
+
+    }
+
+    public static void fileRead(String[] args) {
+
         ArrayList<Float> randArr = new ArrayList<>();
 
         if(Integer.parseInt(args[0]) == 1) {
@@ -26,19 +48,28 @@ public class Main {
                 e.printStackTrace();
             }
         }
-
     }
 
-    public static void puzzle1Setup(String[] args) {
+    public static ArrayList<Puzzle1> puzzle1Setup(String[] args) {
         Random r = new Random();
-        //random seed will have to be deleted before submission
-        //r.setSeed(10);
         ArrayList<Float> input = new ArrayList<>();
 
+        ArrayList<Puzzle1> population = new ArrayList<>();
+        Puzzle1 pop;
+
+        //generate 40 random numbers between -10 and 10
+        //these won't change
         for (int i = 0; i < 40; i++) {
             input.add((20 * r.nextFloat())-10);
         }
-assignRandomly(input);
+
+        System.out.println(input.size());
+        for(int i = 0; i < 10; i++) {
+            pop = assignRandomly(input);
+            population.add(pop);
+        }
+        //pop = assignRandomly(input);
+        //assignRandomly(input);
         try {
             File myObj = new File(args[1]);
             if (myObj.createNewFile()) {
@@ -61,40 +92,48 @@ assignRandomly(input);
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+
+        return population;
     }
 
-    public static void assignRandomly(ArrayList<Float> numbers) {
+    public static Puzzle1 assignRandomly(ArrayList<Float> input1) {
         ArrayList<Float> numbersinBin1 = new ArrayList<>();
         ArrayList<Float> numbersinBin2 = new ArrayList<>();
         ArrayList<Float> numbersinBin3 = new ArrayList<>();
         ArrayList<Float> numbersinBin4 = new ArrayList<>();
-        Bin bin1 = new Bin(1, numbersinBin1);
-        Bin bin2 =new Bin(2,numbersinBin2);
-        Bin bin3 =new Bin(3,numbersinBin3);
-        Bin bin4 =new Bin(4,numbersinBin4);
         int bound=40;
         int i = 0;
+        ArrayList<Float> numbers = new ArrayList<>(input1);
         while (i < 10)
         {
-        int randomNumber = new Random().nextInt(bound--);
-        float choice = numbers.get(randomNumber);
+            System.out.println(numbers.size());
+            int randomNumber = new Random().nextInt(bound--);
+            float choice = numbers.get(randomNumber);
             numbersinBin1.add(numbers.get(randomNumber));
             numbers.remove(choice);
             randomNumber= new Random().nextInt(bound--);
             choice = numbers.get(randomNumber);
             numbersinBin2.add(numbers.get(randomNumber));
             numbers.remove(choice);
+            randomNumber= new Random().nextInt(bound--);
+            choice = numbers.get(randomNumber);
             numbersinBin3.add(numbers.get(randomNumber));
             numbers.remove(choice);
             randomNumber= new Random().nextInt(bound--);
             choice = numbers.get(randomNumber);
             numbersinBin4.add(numbers.get(randomNumber));
-            numbers.remove(choice);
-            randomNumber= new Random().nextInt(bound--);
-            choice = numbers.get(randomNumber);
+           numbers.remove(choice);
 
-        i++;
-      }
+            i++;
+        }
+
+        Bin bin1 = new Bin(1, numbersinBin1);
+        Bin bin2 = new Bin(2,numbersinBin2);
+        Bin bin3 = new Bin(3,numbersinBin3);
+        Bin bin4 = new Bin(4,numbersinBin4);
+
+        Puzzle1 generation = new Puzzle1(bin1,bin2,bin3,bin4);
+
         System.out.println("Numbers in bin1");
         for(int j=0;j<10;j++)
         {
@@ -115,5 +154,9 @@ assignRandomly(input);
         {
             System.out.println(numbersinBin4.get(j));
         }
+
+        return generation;
     }
+
+
 }
