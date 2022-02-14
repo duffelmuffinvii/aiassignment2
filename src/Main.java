@@ -2,9 +2,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,17 +13,21 @@ public class Main {
         if(Integer.parseInt(args[0]) == 1) {
             population = puzzle1Setup(args);
             fileRead(args);
+
+            for(Puzzle1 p : population) {
+                scores.add(p.binFinalScore());
+            }
+
+
+            GeneticAlgorithm ga = new GeneticAlgorithm(population,scores);
+
+            //puzzle1 genetic algorithm with elitism keeping 3, 30% being culled, and pop size of 10
+            ga.puzzle1GA(3,.30,10);
+        } else {
+            fileRead(args);
         }
 
-        for(Puzzle1 p : population) {
-            scores.add(p.binFinalScore());
-        }
 
-
-        GeneticAlgorithm ga = new GeneticAlgorithm(population,scores);
-
-        //puzzle1 genetic algorithm with elitism keeping 3, 30% being culled, and pop size of 10
-        ga.puzzle1GA(3,.30,10);
 
     }
 
@@ -43,6 +46,28 @@ public class Main {
                     randArr.add(Float.parseFloat(data));
                 }
                 myReader.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        } else {
+            puzzle2Setup(args);
+            try {
+                File myObj = new File(args[1]);
+                Scanner myReader = new Scanner(myObj);
+                ArrayList<TowerPiece> pieces = new ArrayList<>();
+                while (myReader.hasNextLine()) {
+                    String data = myReader.nextLine();
+                    String[] preProcess = data.split(",\\s*");;
+                    TowerPiece piece = new TowerPiece(preProcess[0], Integer.parseInt(preProcess[1]), Integer.parseInt(preProcess[2]), Integer.parseInt(preProcess[3]));
+                    pieces.add(piece);
+
+                }
+                myReader.close();
+
+                ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(pieces, 50, 5);
+                TowerBuilder.run(pop, Integer.parseInt(args[2]));
+
             } catch (FileNotFoundException e) {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
@@ -156,6 +181,31 @@ public class Main {
         }
 
         return generation;
+    }
+
+    public static void puzzle2Setup(String[] args) {
+//        try {
+//            File myObj = new File(args[1]);
+//            if (myObj.createNewFile()) {
+//                //create file and populate it with random numbers
+//                System.out.println("File created: " + myObj.getName());
+//                FileWriter myWriter = new FileWriter(args[1]);
+//                for(int i = 0; i < input.size(); i++) {
+//                    myWriter.write(String.valueOf(input.get(i)) + "\n");
+//                }
+//                myWriter.close();
+//            } else {
+//                //file already exists: add random numbers to file
+//                FileWriter myWriter = new FileWriter(args[1]);
+//                for(int i = 0; i < input.size(); i++) {
+//                    myWriter.write(String.valueOf(input.get(i))+"\n");
+//                }
+//                myWriter.close();
+//            }
+//        } catch (IOException e) {
+//            System.out.println("An error occurred.");
+//            e.printStackTrace();
+//        }
     }
 
 
