@@ -31,8 +31,6 @@ public class TowerBuilder {
                 if (t.size() == 0) x++;
             }
 
-            System.out.println(x + " empty towers? \n");
-
             currentGen = nextGen(currentGen);
         }
 
@@ -67,26 +65,6 @@ public class TowerBuilder {
         }
 
         return child;
-    }
-
-    public static void mutate(List<TowerPiece> a, List<TowerPiece> b) {
-        Random r = new Random();
-        int size;
-        if (a.size() < b.size()) {
-            size = a.size();
-        }
-        else {
-            size = b.size();
-        }
-
-        int index;
-
-        if (size == 0) index = 0;
-        else index = r.nextInt(size);
-        TowerPiece pieceA = a.get(index);
-        TowerPiece pieceB = b.get(index);
-        b.set(index, pieceA);
-        a.set(index, pieceB);
     }
 
     public static ArrayList<List<TowerPiece>> nextGen(ArrayList<List<TowerPiece>> prevGen) {
@@ -156,7 +134,7 @@ public class TowerBuilder {
 
         ArrayList<Integer> mutations = new ArrayList<>();
 
-        for (int i = 0; i < next.size()/4; i++) {
+        for (int i = 0; i < 100; i++) {
             int randInt = r.nextInt(next.size());
             if (randInt == bestIndex) {
                 while (randInt == bestIndex) randInt = r.nextInt(next.size());
@@ -165,7 +143,22 @@ public class TowerBuilder {
         }
 
         for (int i = 0; i < mutations.size(); i += 2) {
-            mutate(next.get(i), next.get(i+1));
+            List<TowerPiece> tower1 = next.get(mutations.get(i));
+            List<TowerPiece> tower2 = next.get(mutations.get(i+1));
+
+            int size;
+
+            if (tower1.size() < tower2.size()) size = tower1.size();
+            else size = tower2.size();
+
+            int rand = r.nextInt(size);
+
+            TowerPiece temp = tower2.get(rand);
+            tower2.set(rand, tower1.get(rand));
+            tower1.set(rand, temp);
+
+            next.set(mutations.get(i), tower1);
+            next.set(mutations.get(i+1), tower2);
         }
 
         return next;
