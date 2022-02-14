@@ -11,19 +11,17 @@ public class TowerBuilder {
         long time= System.currentTimeMillis();
         long end = time+(secs*1000);
         int i = 0;
+        int bestScore = 0;
+        int bestScoreGen = 0;
         while(System.currentTimeMillis() < end) {
-            System.out.println("Gen " + (i+1) + ": ");
-            System.out.println(currentGen.size() + " towers");
-            System.out.println("Median: " + getMedian(currentGen));
-            System.out.println("Best result:");
-
-            List<TowerPiece> best = getBestX(currentGen, 1).get(0);
-
-            towerInfo(best);
-
-            System.out.println("Score: " + getScore(best) + "\n");
-
             int x = 0;
+            int score = getScore(getBestX(currentGen, 1).get(0));
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestScoreGen = i;
+            }
+
             for (List<TowerPiece> t : currentGen) {
                 if (t.size() == 0) x++;
             }
@@ -31,7 +29,17 @@ public class TowerBuilder {
             currentGen = nextGen(currentGen);
             i++;
         }
+        System.out.println("Ran for " + (i+1) + " generations");
+        System.out.println(currentGen.size() + " towers");
+        System.out.println("Median in final generation: " + getMedian(currentGen));
+        System.out.println("Best result:");
 
+        List<TowerPiece> best = getBestX(currentGen, 1).get(0);
+
+        towerInfo(best);
+
+        System.out.println("Score: " + getScore(best) + "\n");
+        System.out.println("Best score obtained in generation " + (bestScoreGen+1));
         return currentGen;
     }
 
