@@ -9,7 +9,11 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         ArrayList<Puzzle1> population = new ArrayList<>();
-        ArrayList<Double> scores = new ArrayList<>();
+        ArrayList<Double> initScores = new ArrayList<>();
+        double totalInitScore = 0.0;
+        double averageInitScore = 0.0;
+        double totalgen1Score = 0.0;
+        double averagegen1Score = 0.0;
 
         if(Integer.parseInt(args[0]) == 1) {
             population = puzzle1Setup(args);
@@ -17,14 +21,31 @@ public class Main {
         }
 
         for(Puzzle1 p : population) {
-            scores.add(p.binFinalScore());
+            initScores.add(p.binFinalScore());
         }
 
+        for(double score : initScores) {
+            //System.out.println(score);
+            totalInitScore = totalInitScore + score;
+        }
 
-        GeneticAlgorithm ga = new GeneticAlgorithm(population,scores);
+        averageInitScore = totalInitScore/initScores.size();
+        System.out.println(averageInitScore);
+
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(population, initScores);
 
         //puzzle1 genetic algorithm with elitism keeping 3, 30% being culled, and pop size of 10
-        ga.puzzle1GA(3,.30,10);
+        ArrayList<Double> scores = ga.puzzle1GA(3, .30, 10);
+
+        for (double score : initScores) {
+            totalgen1Score = totalgen1Score + score;
+        }
+
+        averagegen1Score = totalgen1Score / initScores.size();
+        System.out.println(averagegen1Score);
+
+
 
     }
 
@@ -106,7 +127,6 @@ public class Main {
         ArrayList<Float> numbers = new ArrayList<>(input1);
         while (i < 10)
         {
-            System.out.println(numbers.size());
             int randomNumber = new Random().nextInt(bound--);
             float choice = numbers.get(randomNumber);
             numbersinBin1.add(numbers.get(randomNumber));
@@ -134,6 +154,7 @@ public class Main {
 
         Puzzle1 generation = new Puzzle1(bin1,bin2,bin3,bin4);
 
+        /*
         System.out.println("Numbers in bin1");
         for(int j=0;j<10;j++)
         {
@@ -154,6 +175,8 @@ public class Main {
         {
             System.out.println(numbersinBin4.get(j));
         }
+
+         */
 
         return generation;
     }

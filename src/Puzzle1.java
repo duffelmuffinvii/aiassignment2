@@ -26,7 +26,6 @@ public class Puzzle1 {
         for (int j = 0; j < 10; j++) {
             score2 += this.bin2.valuesStored.get(j);
         }
-
         //Bin3
         double score3 = 0.0;
         double max = this.bin3.valuesStored.get(0);
