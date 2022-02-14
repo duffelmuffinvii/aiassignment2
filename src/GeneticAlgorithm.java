@@ -1,55 +1,48 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class GeneticAlgorithm {
 
-    //list of scores for gen0
-    ArrayList<Float> gen0Scores;
+    ArrayList<Puzzle1> gen0;
+    ArrayList<Puzzle1> gen1 = new ArrayList<>();
+    ArrayList<Double> gen0Scores;
 
-    //for puzzle 1: hash map with key=bin# and value=value assigned to bin
-    //for puzzle 2: hash map with key=place on tower and value=piece
-    HashMap<Integer,Float> gen0;
-
-    //gen1
-    HashMap<Integer, Float> gen1H = new HashMap<>();
-    ArrayList<Float> gen1 = new ArrayList<>();
-
-    public GeneticAlgorithm(ArrayList<Float> gen0Scores, HashMap<Integer,Float> gen0) {
+    public GeneticAlgorithm(ArrayList<Puzzle1> gen0, ArrayList<Double> gen0Scores) {
         this.gen0Scores = gen0Scores;
         this.gen0 = gen0;
     }
 
-    //updates gen1 with top scoring organisms from gen0
-    //takes in number of organisms that we want to go straight to the next generation
-    public void elitism(int nextGen) {
+    public static Puzzle1 produceChild(Puzzle1 parentA, Puzzle1 parentB) {
 
-        //temporary scores for internal editing
-        ArrayList<Float> temp = this.gen0Scores;
-        float max = 0;
-        int maxKey = -1;
-        float maxValue = -1;
+        Puzzle1 child = new Puzzle1(parentA.bin1, parentA.bin2, parentB.bin3, parentB.bin4);
+
+        return child;
+    }
+
+    public void elitism(int numKeep) {
+
+        double max = 0.0;
         int maxIndex = -1;
         int count = 0;
 
-        //get key and value arrays from hashmap
-        Object[] gen0KeysObject = gen0.keySet().toArray();
-        Integer[] gen0Keys = new Integer[gen0KeysObject.length];
-        Float[] gen0Values = new Float[gen0KeysObject.length];
-        for(int i = 0; i < gen0KeysObject.length; i++) {
-            gen0Keys[i] = (Integer) gen0KeysObject[i];
-            gen0Values[i] = gen0.get(i);
-        }
+        //temporary score array internal editing
+        ArrayList<Double> temp = gen0Scores;
 
-        while(count < nextGen) {
-            for (int i = 0; i < temp.size(); i++) {
-                if (temp.get(i) > max) {
-                    max = temp.get(i);
+        //loop for number of parents we want to keep
+        while(count < numKeep) {
+            //for each score
+            for (int i = 0; i < gen0Scores.size(); i++) {
+                //if the score is greater than max set max = score
+                if (gen0Scores.get(i) > max) {
+                    max = gen0Scores.get(i);
                     maxIndex = i;
                 }
             }
-            //TODO: change to putting info into gen1 hashmap
-            gen1H.put(gen0Keys[maxIndex],gen0Values[maxIndex]);
-            //gen1.add(max);
+            //remove the score from temp
             temp.remove(maxIndex);
+            //add organism to new generation
+            gen1.add(gen0.get(maxIndex));
+            max = 0.0;
             maxIndex = -1;
             count++;
         }
@@ -60,69 +53,87 @@ public class GeneticAlgorithm {
     public void culling(double percentage, int populationSize) {
 
         double numCulled = this.gen0.size() * percentage;
-        Random r = new Random();
+        //Random r = new Random();
         int x = -1;
         int cull = 0;
-
-        //get key and value arrays from hashmap
-        Object[] gen0KeysObject = gen0.keySet().toArray();
-        Integer[] gen0Keys = new Integer[gen0KeysObject.length];
-        Float[] gen0Values = new Float[gen0KeysObject.length];
-        for(int i = 0; i < gen0KeysObject.length; i++) {
-            gen0Keys[i] = (Integer) gen0KeysObject[i];
-            gen0Values[i] = gen0.get(i);
-        }
+        int count = 0;
 
         while(cull < numCulled) {
 
-            int y = r.nextInt(((populationSize-1) - 0) + 1) + 0;
+            int y = randInt(0,populationSize-count);
+            //int y = r.nextInt(((populationSize-1) - 0) + 1) + 0;
             if(y != x) {
-                //TODO: this is wrong
-                this.gen0.remove(x);
+                this.gen0.remove(y);
                 x = y;
                 cull++;
             }
+
+            count++;
 
         }
 
     }
 
-    public void selection() {
+    public void selection(int populationSize) {
 
-        Float sum = 0f;
-        Float chance;
-        Float cumulativeChance = 0f;
-        ArrayList<Float> chancesOfSelection = new ArrayList<>();
-        ArrayList<Float> cumulativeProb = new ArrayList<>();
-        Random r = new Random();
+        //dummy variables for initiating puzzles
+        Bin bin1 = new Bin(1, new ArrayList<>());
+        Bin bin2 = new Bin(2, new ArrayList<>());
+        Bin bin3 = new Bin(3, new ArrayList<>());
+        Bin bin4 = new Bin(4, new ArrayList<>());
 
-        //calculate the sum
-        for(Float score: this.gen0Scores) {
-            sum = sum+score;
-        }
 
-        //divide each score by the calculated sum
-        for(Float score: this.gen0Scores) {
-            chance = score/sum;
-            chancesOfSelection.add(chance);
-            cumulativeChance = cumulativeChance + chance;
-            cumulativeProb.add(cumulativeChance);
-        }
+        ArrayList<Double> cumulative = new ArrayList<>();
+        double score = 0.0;
+        boolean flag = false;
+        int count = 0;
+        Puzzle1 parent1 = new Puzzle1(bin1,bin2,bin3,bin4);
+        Puzzle1 parent2 = new Puzzle1(bin1,bin2,bin3,bin4);
+        Puzzle1 child;
 
-        while(this.gen0.size() != this.gen1.size()) {
+        while(gen1.size() < populationSize) {
 
-            int x = r.nextInt((100 - 0) + 1) + 0;
-            int y = r.nextInt((100 - 0) + 1) + 0;
-            if(x != y) {
-                Float parent1 = gen0.get(x);
-                Float parent2 = gen0.get(y);
-                //TODO: cutpoint doesn't work if gen0 is a list of scores
-                //TODO not entirely sure how to proceed
-
+            for (int i = 0; i < this.gen0Scores.size(); i++) {
+                score = score + this.gen0Scores.get(i);
+                cumulative.add(score);
             }
 
+            int r = randInt(0, 100);
+            for (int i = 0; i < cumulative.size(); i++) {
+                if (cumulative.get(i) > r && flag == false) {
+
+                    if (count == 0) {
+                        parent1 = gen0.get(i);
+                    }
+
+                    if (count == 1) {
+                        parent2 = gen0.get(i);
+                        flag = true;
+                    }
+
+                    count++;
+
+                }
+
+            }
+            child = produceChild(parent1, parent2);
+            gen1.add(child);
         }
 
+    }
+
+    public static int randInt(int min, int max) {
+
+        Random rand =  new Random();
+
+        return rand.nextInt((max - min) + 1) + min;
+    }
+
+
+    public void puzzle1GA(int numKeep,double percentage, int populationSize) {
+        elitism(numKeep);
+        culling(percentage, populationSize);
+        selection(populationSize);
     }
 
 }
