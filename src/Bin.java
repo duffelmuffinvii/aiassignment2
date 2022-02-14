@@ -11,6 +11,11 @@ public class Bin {
         this.valuesStored= valuesStored;
     }
 
+    public int getBinNumber()
+    {
+        return this.number;
+    }
+
     public double binFinalScore(Bin bin1,Bin bin2,Bin bin3) {
         //BIN1
         double score1 = 1.0;
