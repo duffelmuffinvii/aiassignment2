@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.*;
 
 class compare implements Comparator<List<TowerPiece>> {
@@ -9,6 +10,33 @@ class compare implements Comparator<List<TowerPiece>> {
 public class TowerBuilder {
 
     public TowerBuilder() {
+    }
+
+    public static ArrayList<List<TowerPiece>> run(ArrayList<List<TowerPiece>> gen0, int gens) {
+        ArrayList<List<TowerPiece>> currentGen = gen0;
+        for (int i = 0; i < gens; i++) {
+            System.out.println("Gen " + (i+1) + ": ");
+            System.out.println(currentGen.size() + " towers");
+            System.out.println("Average: " + avgScore(currentGen));
+            System.out.println("Best result:");
+
+            List<TowerPiece> best = getBestX(currentGen, 1).get(0);
+
+            towerInfo(best);
+
+            System.out.println("Score: " + getScore(best) + "\n");
+
+            int x = 0;
+            for (List<TowerPiece> t : currentGen) {
+                if (t.size() == 0) x++;
+            }
+
+            System.out.println(x + " empty towers? \n");
+
+            currentGen = nextGen(currentGen);
+        }
+
+        return currentGen;
     }
 
     // generates initial population of towers given list of pieces
@@ -44,9 +72,17 @@ public class TowerBuilder {
     public static void mutate(List<TowerPiece> a, List<TowerPiece> b) {
         Random r = new Random();
         int size;
-        if (a.size() < b.size()) size = a.size();
-        else size = b.size();
-        int index = r.nextInt(size);
+        if (a.size() < b.size()) {
+            size = a.size();
+        }
+        else {
+            size = b.size();
+        }
+
+        int index;
+
+        if (size == 0) index = 0;
+        else index = r.nextInt(size);
         TowerPiece pieceA = a.get(index);
         TowerPiece pieceB = b.get(index);
         b.set(index, pieceA);
@@ -54,7 +90,7 @@ public class TowerBuilder {
     }
 
     public static ArrayList<List<TowerPiece>> nextGen(ArrayList<List<TowerPiece>> prevGen) {
-        ArrayList<List<TowerPiece>> next = getBestX(prevGen, 2);
+        ArrayList<List<TowerPiece>> next = getBestTwo(prevGen);
         int genSize = prevGen.size();
         ArrayList<List<TowerPiece>> culledPrev = cull(prevGen);
 
@@ -101,6 +137,37 @@ public class TowerBuilder {
             next.add(produceChild(parentA, parentB));
         }
 
+        int bestIndex = 0;
+        int bestScore = 0;
+
+        for (int i = 0; i < next.size(); i++) {
+
+            List<TowerPiece> t  = next.get(i);
+
+            int score = getScore(t);
+            if (score > bestScore) {
+                bestScore = score;
+                bestIndex = i;
+            }
+        }
+
+
+        //MUTATIONS
+
+        ArrayList<Integer> mutations = new ArrayList<>();
+
+        for (int i = 0; i < next.size()/4; i++) {
+            int randInt = r.nextInt(next.size());
+            if (randInt == bestIndex) {
+                while (randInt == bestIndex) randInt = r.nextInt(next.size());
+            }
+            mutations.add(randInt);
+        }
+
+        for (int i = 0; i < mutations.size(); i += 2) {
+            mutate(next.get(i), next.get(i+1));
+        }
+
         return next;
     }
 
@@ -108,7 +175,6 @@ public class TowerBuilder {
         for (TowerPiece p : tower) {
             System.out.println(p.toString());
         }
-        System.out.println();
     }
 
     public static ArrayList<List<TowerPiece>> getBestX(ArrayList<List<TowerPiece>> towers, int amount) {
@@ -119,12 +185,52 @@ public class TowerBuilder {
             towersClone.add(t);
         }
 
-        Collections.sort(towersClone, new compare());
         ArrayList<List<TowerPiece>> bestx = new ArrayList<>();
-        bestx.addAll(towersClone.subList(0, amount));
+
+        while (bestx.size() < amount) {
+            int bestIndex = 0;
+            int bestScore = 0;
+            for (int i = 0; i < towersClone.size(); i++) {
+                List<TowerPiece> t = towersClone.get(i);
+                if (getScore(t) > bestScore) {
+                    bestScore = getScore(t);
+                    bestIndex = i;
+                }
+            }
+
+            bestx.add(towersClone.get(bestIndex));
+            towersClone.remove(bestIndex);
+        }
 
         return bestx;
 
+    }
+
+    public static ArrayList<List<TowerPiece>> getBestTwo(ArrayList<List<TowerPiece>> towers) {
+        ArrayList<Integer> scores = new ArrayList<>();
+        ArrayList<List<TowerPiece>> bestTowers = new ArrayList<>();
+        int best = 0;
+        int bestIndex = 0;
+        int secondBest = 0;
+        int secondBestIndex = 0;
+        for (List<TowerPiece> tower : towers) {
+            scores.add(TowerBuilder.getScore(tower));
+        }
+        for (int i = 0; i < scores.size(); i++) {
+            if (scores.get(i) > best) {
+                best = scores.get(i);
+                bestIndex = i;
+            }
+        }
+        for (int i = 0; i < scores.size(); i++) {
+            if (scores.get(i) > secondBest && scores.get(i) != best) {
+                secondBest = scores.get(i);
+                secondBestIndex = i;
+            }
+        }
+        bestTowers.add(towers.get(bestIndex));
+        bestTowers.add(towers.get(secondBestIndex));
+        return bestTowers;
     }
 
 
@@ -192,6 +298,9 @@ public class TowerBuilder {
     public static int getScore (List<TowerPiece> tower) {
 
         int height = tower.size();
+
+        if (height == 0) return 0;
+
         int cost = tower.get(0).cost;
 
         if (!tower.get(0).type.equals("Door")) {
@@ -232,7 +341,15 @@ public class TowerBuilder {
         return 10 + (height * height) - cost;
     }
 
+    public static float avgScore(ArrayList<List<TowerPiece>> towers) {
+        float a = 0;
 
+        for (List<TowerPiece> t : towers) {
+            a += getScore(t);
+        }
+
+        return a/towers.size();
+    }
 
     public static int randInt(int min, int max) {
 
