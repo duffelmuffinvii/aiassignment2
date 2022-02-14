@@ -65,8 +65,8 @@ public class Main {
                 }
                 myReader.close();
 
-                ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(pieces, 20, 4);
-                TowerBuilder.run(pop, 10);
+                ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(pieces, 50, 5);
+                TowerBuilder.run(pop, Integer.parseInt(args[2]));
 
             } catch (FileNotFoundException e) {
                 System.out.println("An error occurred.");

@@ -49,8 +49,8 @@ public class TowerTest {
         assertEquals(TowerBuilder.getScore(testTowerShort), 8);
 
 
-        ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(pieces, 50, 20);
+        ArrayList<List<TowerPiece>> pop = TowerBuilder.generatePop(pieces, 50, 5);
 
-        ArrayList<List<TowerPiece>> run3 = TowerBuilder.run(pop, 100);
+        ArrayList<List<TowerPiece>> run3 = TowerBuilder.run(pop, 4);
     }
 }

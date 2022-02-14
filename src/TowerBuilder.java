@@ -1,23 +1,20 @@
 import java.lang.reflect.Array;
 import java.util.*;
 
-class compare implements Comparator<List<TowerPiece>> {
-    public int compare(List<TowerPiece> a, List<TowerPiece> b) {
-        return TowerBuilder.getScore(a) - TowerBuilder.getScore(b);
-    }
-}
-
 public class TowerBuilder {
 
     public TowerBuilder() {
     }
 
-    public static ArrayList<List<TowerPiece>> run(ArrayList<List<TowerPiece>> gen0, int gens) {
+    public static ArrayList<List<TowerPiece>> run(ArrayList<List<TowerPiece>> gen0, int secs) {
         ArrayList<List<TowerPiece>> currentGen = gen0;
-        for (int i = 0; i < gens; i++) {
+        long time= System.currentTimeMillis();
+        long end = time+(secs*1000);
+        int i = 0;
+        while(System.currentTimeMillis() < end) {
             System.out.println("Gen " + (i+1) + ": ");
             System.out.println(currentGen.size() + " towers");
-            System.out.println("Average: " + avgScore(currentGen));
+            System.out.println("Median: " + getMedian(currentGen));
             System.out.println("Best result:");
 
             List<TowerPiece> best = getBestX(currentGen, 1).get(0);
@@ -32,9 +29,21 @@ public class TowerBuilder {
             }
 
             currentGen = nextGen(currentGen);
+            i++;
         }
 
         return currentGen;
+    }
+
+    public static double getMedian(ArrayList<List<TowerPiece>> towers) {
+        ArrayList<Integer> scores = new ArrayList<>();
+        for (List<TowerPiece> t : towers) scores.add(getScore(t));
+
+        Collections.sort(scores);
+        if (scores.size() % 2 == 0)
+            return ((double)scores.get(scores.size()/2) + (double)scores.get(scores.size()/2 - 1))/2;
+        else
+            return (double)scores.get(scores.size()/2);
     }
 
     // generates initial population of towers given list of pieces
@@ -134,7 +143,15 @@ public class TowerBuilder {
 
         ArrayList<Integer> mutations = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        int amtMutate;
+
+        if (next.size() > 1000) amtMutate = 200;
+        else if (next.size() > 500) amtMutate = 100;
+        else if (next.size() > 100) amtMutate = 20;
+        else if (next.size() > 50) amtMutate = 10;
+        else amtMutate = 2;
+
+        for (int i = 0; i < amtMutate; i++) {
             int randInt = r.nextInt(next.size());
             if (randInt == bestIndex) {
                 while (randInt == bestIndex) randInt = r.nextInt(next.size());
@@ -151,6 +168,7 @@ public class TowerBuilder {
             if (tower1.size() < tower2.size()) size = tower1.size();
             else size = tower2.size();
 
+            if (size == 0) continue;
             int rand = r.nextInt(size);
 
             TowerPiece temp = tower2.get(rand);
@@ -172,11 +190,7 @@ public class TowerBuilder {
 
     public static ArrayList<List<TowerPiece>> getBestX(ArrayList<List<TowerPiece>> towers, int amount) {
 
-        ArrayList<List<TowerPiece>> towersClone = new ArrayList<>();
-
-        for (List<TowerPiece> t : towers) {
-            towersClone.add(t);
-        }
+        ArrayList<List<TowerPiece>> towersClone = new ArrayList<>(towers);
 
         ArrayList<List<TowerPiece>> bestx = new ArrayList<>();
 
